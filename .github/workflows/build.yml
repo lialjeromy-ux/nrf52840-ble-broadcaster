@@ -1,0 +1,29 @@
+name: Build BLE Test Firmware
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Zephyr
+        uses: zephyrproject-rtos/action-zephyr-setup@v1
+        with:
+          app-path: app
+          toolchains: arm-zephyr-eabi
+
+      - name: Build firmware
+        working-directory: app
+        run: |
+          west build -b promicro_nrf52840/nrf52840/uf2 .
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ble-test-firmware
+          path: app/build/zephyr/
